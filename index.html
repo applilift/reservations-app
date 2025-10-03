@@ -6,6 +6,7 @@
   <title>Carnet de Bord – Réservations libres</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2ecc71">
+
   <style>
     :root{
       --red:#e74c3c;
@@ -28,18 +29,16 @@
     h1{font-size:20px;margin:0;font-weight:700}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
     @media (max-width:860px){.grid{grid-template-columns:1fr}}
+
     .card{background:var(--card);border:1px solid #e6e6e6;border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
     .card h2{margin:0 0 10px;font-size:18px}
-
     .row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
     label.small{font-size:12px;color:var(--muted);display:block}
     input[type="time"],select,textarea,input[type="text"],input[type="email"]{width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:8px;font-size:15px}
 
     .time-2{display:grid;grid-template-columns:repeat(2,minmax(140px,1fr));gap:10px}
-
-    /* Types */
     .type-buttons{display:flex;flex-wrap:wrap;gap:8px}
-    .type-btn{border:none;border-radius:999px;padding:6px 10px;font-weight:700;cursor:pointer;background:#fff}
+    .type-btn{border:none;border-radius:999px;padding:6px 10px;font-weight:700;cursor:pointer}
     .type-EXP{color:var(--red);border:2px solid var(--red)}
     .type-LFT{color:var(--green);border:2px solid var(--green)}
     .type-PER{color:var(--orange);border:2px solid var(--orange)}
@@ -50,10 +49,8 @@
     .type-PER.active{background:var(--orange)}
     .type-PAU.active{background:var(--blue)}
 
-    /* PRO / PART */
     .pro-part{display:flex;flex-direction:column;gap:6px}
-    .pp-btn{background:#eee;color:#111;border:1px solid #ccc;border-radius:6px;padding:6px 10px;font-weight:bold;cursor:pointer}
-    .pp-btn.active{border-color:var(--violet);color:var(--violet);background:#f4f0ff}
+    .pp-btn{background:var(--orchid);color:#fff;border:none;border-radius:6px;padding:6px 10px;font-weight:bold;cursor:pointer}
 
     .inline-actions{display:flex;flex-wrap:wrap;gap:8px}
     .pill{display:inline-block;border:1px solid #bbb;border-radius:999px;padding:4px 10px;font-size:12px;color:#444;background:#f5f5f5;cursor:pointer}
@@ -66,32 +63,52 @@
     @media(max-width:680px){.cols-2{grid-template-columns:1fr}}
 
     .btn-primary{background:#222;color:#fff;border:none;border-radius:8px;padding:10px 14px;font-size:15px;cursor:pointer}
-    .btn-secondary{background:#fff;color:#000;border:1px solid #ccc;border-radius:4px;padding:4px 8px;font-size:12px;cursor:pointer}
-    .btn-danger{background:#fff;color:#000;border:1px solid #ccc;border-radius:4px;padding:4px 8px;font-size:12px;cursor:pointer}
-    .btn-secondary:hover,.btn-danger:hover{background:#f2f2f2}
+    .btn-secondary{background:#eee;color:#222;border:none;border-radius:8px;padding:10px 14px;font-size:15px;cursor:pointer}
+    .btn-danger{background:#c44536;color:#fff;border:none;border-radius:8px;padding:8px 12px;cursor:pointer}
 
-    /* Liste */
-    .res-item{border:1px solid #e6e6e6;border-radius:10px;padding:10px 12px;margin-bottom:10px;background:#fff}
-    .title-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
-    .left-part{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-    .right-part{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+    .res-item{border:1px solid #e6e6e6;border-radius:10px;padding:10px 12px;margin-bottom:10px;background:#fff;display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center}
     .badge{font-size:12px;font-weight:700;border-radius:6px;padding:3px 6px;display:inline-block}
     .bEXP{background:var(--red);color:#fff}
     .bLFT{background:var(--green);color:#fff}
     .bPER{background:var(--orange);color:#fff}
     .bPAU{background:var(--blue);color:#fff}
+    .title-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 
-    .client-label{font-weight:700;color:var(--violet)} /* PRO / PART mauve */
-    .muted{color:var(--muted);font-size:12px}
+    /* PRO / PART */
+    .client-label{
+      font-weight:bold;
+      font-size:13px;
+      color:#000;
+    }
 
-    .res-actions{display:flex;justify-content:center;gap:8px;margin-top:6px}
+    /* Modifier / Supprimer */
+    .actions{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+    .actions .btn-secondary,
+    .actions .btn-danger{
+      background:#fff;
+      color:#000;
+      border:1px solid #ccc;
+      font-size:12px;
+      padding:4px 8px;
+      border-radius:4px;
+      cursor:pointer;
+      transition:background .2s;
+    }
+    .actions .btn-secondary:hover,
+    .actions .btn-danger:hover{
+      background:#f2f2f2;
+    }
 
     /* Toast */
     .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 16px;border-radius:6px;opacity:0;transition:opacity .4s,transform .4s;z-index:9999}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(-10px)}
 
     @media(max-width:600px){
-      .btn-primary{width:100%;font-size:16px;padding:14px}
+      .btn-primary,.btn-secondary,.btn-danger{width:100%;font-size:16px;padding:14px}
       textarea,input,select{font-size:16px}
       h1{font-size:18px}
     }
@@ -108,7 +125,6 @@
       <!-- Formulaire -->
       <section class="card">
         <h2>Nouvelle réservation</h2>
-
         <div class="row time-2">
           <div><label class="small">Début</label><input type="time" id="startTime" step="900"/></div>
           <div><label class="small">Fin</label><input type="time" id="endTime" step="900"/></div>
@@ -126,99 +142,22 @@
 
         <div class="row">
           <div class="pro-part">
-            <button class="pp-btn active" id="btnPro">PRO</button>
+            <button class="pp-btn" id="btnPro">PRO</button>
             <button class="pp-btn" id="btnPart">PART</button>
           </div>
 
           <div style="flex:1">
             <div class="inline-actions">
               <span class="pill" id="btnNote">NOTE</span>
-              <span class="pill" id="btnFacture">FACTURE</span>
+              <span class="pill" id="btnFacture">FACT</span>
               <span class="pill" id="btnAdresse">ADRESSE</span>
               <span class="pill" id="indVF">V(F)</span>
               <span class="pill" id="indVP">V(P)</span>
             </div>
 
-            <!-- NOTE -->
-            <div class="fieldset" id="noteBox" style="display:none">
-              <legend>Note</legend>
-              <textarea id="note" rows="3" placeholder="Votre note…"></textarea>
-            </div>
-
-            <!-- FACTURE (corrigée / complète) -->
-            <div class="fieldset" id="factureBox" style="display:none">
-              <legend>Facturation</legend>
-
-              <div class="row cols-2">
-                <div>
-                  <label class="small">Type de client</label>
-                  <select id="factType">
-                    <option value="PRO">PRO</option>
-                    <option value="PART">PARTICULIER</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="small">Statut client</label>
-                  <select id="factStatus">
-                    <option value="encore">Pas encodé</option>
-                    <option value="deja">Déjà encodé</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Bloc PRO -->
-              <div id="blocPro" class="row">
-                <div style="flex:1">
-                  <label class="small">Nom de la firme (obligatoire)</label>
-                  <input type="text" id="proFirme"/>
-                </div>
-              </div>
-              <div id="extraPro" class="row cols-2">
-                <input type="text" id="proRue" placeholder="Rue et n°"/>
-                <input type="text" id="proCP" placeholder="Code postal"/>
-                <input type="text" id="proVille" placeholder="Ville"/>
-                <input type="text" id="proTVA" placeholder="N° TVA"/>
-                <input type="email" id="proEmail" placeholder="Email"/>
-              </div>
-
-              <!-- Bloc PART -->
-              <div id="blocPart" class="row" style="display:none">
-                <div class="cols-2" style="flex:1">
-                  <div>
-                    <label class="small">Prénom (obligatoire)</label>
-                    <input type="text" id="partPrenom"/>
-                  </div>
-                  <div>
-                    <label class="small">Nom (obligatoire)</label>
-                    <input type="text" id="partNom"/>
-                  </div>
-                </div>
-              </div>
-              <div id="extraPart" class="row cols-2" style="display:none">
-                <input type="text" id="partRue" placeholder="Rue et n°"/>
-                <input type="text" id="partCP" placeholder="Code postal"/>
-                <input type="text" id="partVille" placeholder="Ville"/>
-                <input type="email" id="partEmail" placeholder="Email"/>
-              </div>
-
-              <div class="row">
-                <div style="flex:1">
-                  <label class="small">Mode de paiement (obligatoire)</label>
-                  <select id="factPay">
-                    <option value="">-- Choisir --</option>
-                    <option value="cash">Payé cash</option>
-                    <option value="virement">Payé virement</option>
-                    <option value="non">Non payé</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <!-- ADRESSE -->
-            <div class="fieldset" id="adresseBox" style="display:none">
-              <legend>Adresse</legend>
-              <textarea id="adresse" rows="2" placeholder="Adresse (affichée en MAJUSCULES dans la liste)"></textarea>
-            </div>
+            <div class="fieldset" id="noteBox" style="display:none"><legend>Note</legend><textarea id="note" rows="3"></textarea></div>
+            <div class="fieldset" id="factureBox" style="display:none"><legend>Facture</legend><textarea id="facture" rows="3"></textarea></div>
+            <div class="fieldset" id="adresseBox" style="display:none"><legend>Adresse</legend><textarea id="adresse" rows="2"></textarea></div>
           </div>
         </div>
 
@@ -241,7 +180,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-    // === CONFIG FIREBASE (ta config) ===
     const firebaseConfig = {
       apiKey: "AIzaSyAiRQYtjjPjkwiU76iqZGdnxgxjjbbaLQI",
       authDomain: "agendacarnet.firebaseapp.com",
@@ -250,349 +188,145 @@
       messagingSenderId: "593717794727",
       appId: "1:593717794727:web:e45a8b06f4e9d356b74882"
     };
+
     const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+    const db = getFirestore(app);
     const COL = collection(db,"reservations_free");
 
-    // === UTIL ===
-    const $=(s)=>document.querySelector(s), $$=(s)=>document.querySelectorAll(s);
+    const $=(s)=>document.querySelector(s),$$=(s)=>document.querySelectorAll(s);
     const toHM=(t)=>t?.substring(0,5)||"";
     const colorFromType=(t)=>({EXP:"bEXP",LFT:"bLFT",PER:"bPER",PAU:"bPAU"}[t]||"");
+    let selectedType="LFT",selectedClient="PRO",editingId=null;
 
-    // === ÉTAT ===
-    let selectedType="LFT";
-    let selectedClient="PRO";
-    let editingId=null;
-
-    // === TOAST + NOTIF ===
+    // Toast
     function showToast(msg,color="#333"){
       const t=document.createElement("div");
-      t.className="toast"; t.style.background=color; t.textContent=msg;
-      document.body.appendChild(t); setTimeout(()=>t.classList.add("show"),50);
-      setTimeout(()=>{t.classList.remove("show"); setTimeout(()=>t.remove(),400);},3000);
+      t.className="toast";t.style.background=color;t.textContent=msg;
+      document.body.appendChild(t);
+      setTimeout(()=>t.classList.add("show"),50);
+      setTimeout(()=>{t.classList.remove("show");setTimeout(()=>t.remove(),400);},3000);
     }
+
+    // Notification système
     async function notify(title,body){
-      try{
-        if(Notification.permission==="granted"){ new Notification(title,{body}); }
-        else if(Notification.permission!=="denied"){
-          const perm=await Notification.requestPermission();
-          if(perm==="granted") new Notification(title,{body});
-        }
-      }catch(e){}
+      if(Notification.permission==="granted"){new Notification(title,{body});}
+      else if(Notification.permission!=="denied"){
+        const perm=await Notification.requestPermission();
+        if(perm==="granted") new Notification(title,{body});
+      }
     }
 
-    // === INIT UI ===
     $("#datePicker").value=new Date().toISOString().split("T")[0];
-
-    // Types
     const typeButtons=$("#typeButtons");
-    typeButtons.addEventListener("click",(e)=>{
-      const b=e.target.closest(".type-btn"); if(!b) return;
-      selectedType=b.dataset.type;
-      $$(".type-btn").forEach(x=>x.classList.remove("active"));
-      b.classList.add("active");
-    });
+    typeButtons.addEventListener("click",(e)=>{const b=e.target.closest(".type-btn");if(!b)return;selectedType=b.dataset.type;$$(".type-btn").forEach(x=>x.classList.remove("active"));b.classList.add("active");});
     typeButtons.querySelector('[data-type="LFT"]').classList.add("active");
 
-    // PRO/PART
-    const btnPro=$("#btnPro"), btnPart=$("#btnPart");
-    function setClient(c){
-      selectedClient=c;
-      btnPro.classList.toggle("active", c==="PRO");
-      btnPart.classList.toggle("active", c==="PART");
-    }
-    btnPro.addEventListener("click",()=>setClient("PRO"));
-    btnPart.addEventListener("click",()=>setClient("PART"));
+    const btnPro=$("#btnPro"),btnPart=$("#btnPart");
+    btnPro.addEventListener("click",()=>{selectedClient="PRO";btnPro.style.display="inline-block";btnPart.style.display="none";});
+    btnPart.addEventListener("click",()=>{selectedClient="PART";btnPart.style.display="inline-block";btnPro.style.display="none";});
 
-    // Toggle zones
+    // Note / Facture / Adresse toggles
     $("#btnNote").addEventListener("click",()=>toggleBox("noteBox","#btnNote"));
     $("#btnFacture").addEventListener("click",()=>toggleBox("factureBox","#btnFacture"));
     $("#btnAdresse").addEventListener("click",()=>toggleBox("adresseBox","#btnAdresse"));
     $("#indVF").addEventListener("click",()=>$("#indVF").classList.toggle("violet"));
     $("#indVP").addEventListener("click",()=>$("#indVP").classList.toggle("violet"));
 
-    function toggleBox(id, pillSel){
-      const el = $("#"+id);
-      const pill = $(pillSel);
-      const show = (el.style.display==="none"||el.style.display==="");
-      el.style.display = show ? "block" : "none";
-      // mettre la teinte orange si contenu présent
-      if(id==="noteBox") pill.classList.toggle("orange", $("#note").value.trim().length>0);
-      if(id==="factureBox") pill.classList.toggle("orange", factureIsValid());
-    }
-
-    // Facture : logique d'affichage et indicateur
-    $("#factType").addEventListener("change", updateFactureUI);
-    $("#factStatus").addEventListener("change", updateFactureUI);
-    ["proFirme","factPay","partPrenom","partNom","proRue","proCP","proVille","proTVA","proEmail","partRue","partCP","partVille","partEmail"].forEach(id=>{
-      const el=$("#"+id); if(!el) return;
-      el.addEventListener("input", ()=> $("#btnFacture").classList.toggle("orange", factureIsValid()));
-      if(el.tagName==="SELECT") el.addEventListener("change", ()=> $("#btnFacture").classList.toggle("orange", factureIsValid()));
-    });
-
-    function updateFactureUI(){
-      const type=$("#factType").value;
-      const status=$("#factStatus").value; // deja / encore
-      $("#blocPro").style.display  = (type==="PRO")? "block":"none";
-      $("#blocPart").style.display = (type==="PART")? "block":"none";
-      $("#extraPro").style.display  = (type==="PRO"  && status==="encore")? "grid":"none";
-      $("#extraPart").style.display = (type==="PART" && status==="encore")? "grid":"none";
-      $("#btnFacture").classList.toggle("orange", factureIsValid());
-    }
-    function factureIsValid(){
-      // critères minimaux pour allumer le voyant FACT
-      const type=$("#factType").value, pay=$("#factPay").value;
-      if(type==="PRO"){
-        return ($("#proFirme").value.trim().length>0) && (pay!=="");
-      }else{
-        return ($("#partPrenom").value.trim().length>0) && ($("#partNom").value.trim().length>0) && (pay!=="");
+    function toggleBox(id,pillSel){
+      const el=$("#"+id); const pill=$(pillSel);
+      const show = el.style.display==="none"||el.style.display==="";
+      el.style.display=show?"block":"none";
+      if(id==="noteBox"||id==="factureBox"){
+        const txt = id==="noteBox" ? $("#note").value.trim() : $("#facture").value.trim();
+        pill.classList.toggle("orange",txt.length>0);
       }
     }
 
-    // coloration NOTE
-    $("#note").addEventListener("input",()=> $("#btnNote").classList.toggle("orange", $("#note").value.trim().length>0));
+    // coloration bouton quand on tape dans Note/Facture
+    $("#note").addEventListener("input",()=>$("#btnNote").classList.toggle("orange",$("#note").value.trim().length>0));
+    $("#facture").addEventListener("input",()=>$("#btnFacture").classList.toggle("orange",$("#facture").value.trim().length>0));
 
-    // === LISTE ===
-    $("#datePicker").addEventListener("change", refreshList);
     async function refreshList(){
       const d=$("#datePicker").value;
-      $("#list").innerHTML=""; $("#empty").style.display="block";
-      const q = query(COL, where("date","==",d), orderBy("start"));
-      const snap = await getDocs(q);
+      $("#list").innerHTML="";$("#empty").style.display="block";
+      const q=query(COL,where("date","==",d),orderBy("start"));
+      const snap=await getDocs(q);
       let count=0;
       snap.forEach(docSnap=>{
         count++;
-        $("#list").appendChild(renderItem(docSnap.id, docSnap.data()));
+        $("#list").appendChild(renderItem(docSnap.id,docSnap.data()));
       });
-      $("#empty").style.display = count? "none":"block";
+      $("#empty").style.display=count?"none":"block";
     }
 
-    function renderItem(id, data){
-      const div = document.createElement("div");
-      div.className = "res-item";
-      const badgeClass = colorFromType(data.type);
-      const pills=[];
-      if(data.vf) pills.push(`<span class="pill violet">V(F)</span>`);
-      if(data.vp) pills.push(`<span class="pill violet">V(P)</span>`);
-      if((data.note||"").trim().length>0) pills.push(`<span class="pill orange">NOTE</span>`);
-      if(data.fact) pills.push(`<span class="pill orange">FACT</span>`); // pas d'affichage des détails facture
-
-      const adresseHTML = (data.adresse||"").trim().length? `<div><strong>${(data.adresse||"")}</strong></div>` : "";
-
-      div.innerHTML = `
-        <div class="title-line">
-          <div class="left-part">
+    function renderItem(id,data){
+      const div=document.createElement("div");
+      div.className="res-item";
+      const badgeClass=colorFromType(data.type);
+      div.innerHTML=`
+        <div>
+          <div class="title-line">
             <span class="badge ${badgeClass}">${data.type}</span>
             <strong>${toHM(data.start)} → ${toHM(data.end)}</strong>
             <span class="client-label">${data.client}</span>
+            ${data.vf?`<span class="pill violet">V(F)</span>`:""}
+            ${data.vp?`<span class="pill violet">V(P)</span>`:""}
+            ${data.note?`<span class="pill orange">NOTE</span>`:""}
+            ${data.facture?`<span class="pill orange">FACT</span>`:""}
           </div>
-          <div class="right-part">${pills.join(" ")}</div>
+          ${data.adresse?`<div><strong>${data.adresse}</strong></div>`:""}
         </div>
-        ${adresseHTML}
-        <div class="res-actions">
+        <div class="actions">
           <button class="btn-secondary" data-act="edit">Modifier</button>
           <button class="btn-danger" data-act="del">Annuler</button>
-        </div>
-      `;
-
-      div.querySelector('[data-act="del"]').addEventListener("click", async ()=>{
-        if(confirm("Supprimer cette réservation ?")){
-          await deleteDoc(doc(db,"reservations_free", id));
-          showToast("Réservation supprimée ❌","#c44536");
-          refreshList();
-        }
-      });
-      div.querySelector('[data-act="edit"]').addEventListener("click", ()=>{
-        loadIntoForm(id, data);
-      });
+        </div>`;
+      div.querySelector('[data-act="del"]').addEventListener("click",async()=>{if(confirm("Supprimer ?")){await deleteDoc(doc(db,"reservations_free",id));showToast("Réservation supprimée ❌","#c44536");refreshList();}});
+      div.querySelector('[data-act="edit"]').addEventListener("click",()=>loadIntoForm(id,data));
       return div;
     }
 
-    // === SAISIE / ENREGISTREMENT ===
-    $("#btnSave").addEventListener("click", saveReservation);
-    $("#btnCancelEdit").addEventListener("click", ()=>{
-      editingId=null; clearForm(); updateSaveBtn();
-    });
-
-    function updateSaveBtn(){
-      $("#btnSave").textContent = editingId? "Enregistrer les modifications" : "Ajouter la réservation";
-      $("#btnCancelEdit").style.display = editingId? "inline-block" : "none";
-    }
-
-    function collectFacture(){
-      // Si le bloc facture est fermé ET que l'indicateur n'est pas orange -> pas de facture
-      const boxVisible = $("#factureBox").style.display!=="none" && $("#factureBox").style.display!=="";
-      if(!boxVisible && !$("#btnFacture").classList.contains("orange")) return null;
-
-      const type=$("#factType").value, status=$("#factStatus").value, pay=$("#factPay").value;
-      const base = { type, status, pay };
-
-      if(type==="PRO"){
-        base.pro = {
-          firme: $("#proFirme").value.trim(),
-          rue:   $("#proRue").value.trim(),
-          cp:    $("#proCP").value.trim(),
-          ville: $("#proVille").value.trim(),
-          tva:   $("#proTVA").value.trim(),
-          email: $("#proEmail").value.trim(),
-        };
-      }else{
-        base.part = {
-          prenom: $("#partPrenom").value.trim(),
-          nom:    $("#partNom").value.trim(),
-          rue:    $("#partRue").value.trim(),
-          cp:     $("#partCP").value.trim(),
-          ville:  $("#partVille").value.trim(),
-          email:  $("#partEmail").value.trim(),
-        };
-      }
-      // si rien d'utile -> null
-      const hasMinimum = factureIsValid();
-      return hasMinimum ? base : null;
-    }
-
-    function validateFactureForSave(fact, client){
-      if(!fact) return true;              // pas de facture -> ok
-      if(fact.type!==client) return false;// type doit coller au client
-      if(!fact.pay) return false;
-      if(client==="PRO"){
-        return !!(fact.pro?.firme);
-      }else{
-        return !!(fact.part?.prenom) && !!(fact.part?.nom);
-      }
-    }
+    $("#btnSave").addEventListener("click",saveReservation);
+    $("#btnCancelEdit").addEventListener("click",()=>{editingId=null;clearForm();});
 
     async function saveReservation(){
-      const date=$("#datePicker").value;
-      const start=$("#startTime").value;
-      const end  =$("#endTime").value;
-      if(!start || !end || end<=start){ alert("Heures invalides"); return; }
-
-      const note = $("#note").value.trim();
-      const adresse = $("#adresse").value.trim().toUpperCase();
-      const vf = $("#indVF").classList.contains("violet");
-      const vp = $("#indVP").classList.contains("violet");
-      const fact = collectFacture();
-      const client = selectedClient;
-
-      if(!validateFactureForSave(fact, client)){
-        alert("Facture incomplète selon le type choisi.");
-        return;
-      }
-
-      const data = {
-        date, start, end,
-        type: selectedType,
-        client,
-        note,
-        adresse,
-        vf, vp,
-        fact,              // null ou objet
-        createdAt: Date.now()
-      };
-
-      if(editingId){
-        await updateDoc(doc(db,"reservations_free", editingId), data);
-        showToast("Réservation modifiée ✏️","#f39c12"); notify("Réservation modifiée","Un créneau a été modifié.");
-      }else{
-        await addDoc(COL, data);
-        showToast("Réservation ajoutée ✅","#2ecc71"); notify("Nouvelle réservation","Un créneau a été ajouté.");
-      }
-      editingId=null; updateSaveBtn();
-      clearForm();
-      refreshList();
+      const date=$("#datePicker").value,start=$("#startTime").value,end=$("#endTime").value;
+      if(!start||!end||end<=start){alert("Heures invalides");return;}
+      const note=$("#note").value.trim();
+      const facture=$("#facture").value.trim();
+      const adresse=$("#adresse").value.trim().toUpperCase();
+      const vf=$("#indVF").classList.contains("violet");
+      const vp=$("#indVP").classList.contains("violet");
+      const data={date,start,end,type:selectedType,client:selectedClient,note,facture,adresse,vf,vp,createdAt:Date.now()};
+      if(editingId){await updateDoc(doc(db,"reservations_free",editingId),data);showToast("Réservation modifiée ✏️","#f39c12");notify("Réservation modifiée","Un créneau a été modifié.");}
+      else{await addDoc(COL,data);showToast("Réservation ajoutée ✅","#2ecc71");notify("Nouvelle réservation","Un créneau a été ajouté.");}
+      editingId=null;clearForm();refreshList();
     }
 
-    function loadIntoForm(id, d){
-      editingId=id; updateSaveBtn();
-
-      // Réinitialiser PRO/PART visibles, puis appliquer la sélection
-      btnPro.style.display="inline-block"; btnPart.style.display="inline-block";
-      setClient(d.client==="PART"?"PART":"PRO");
-
-      $("#datePicker").value = d.date;
-      $("#startTime").value  = d.start;
-      $("#endTime").value    = d.end;
-
-      selectedType = d.type;
-      $$(".type-btn").forEach(x=>x.classList.toggle("active", x.dataset.type===selectedType));
-
-      $("#note").value = d.note || "";
-      $("#btnNote").classList.toggle("orange", (d.note||"").trim().length>0);
-
-      $("#adresse").value = d.adresse || "";
-      $("#indVF").classList.toggle("violet", !!d.vf);
-      $("#indVP").classList.toggle("violet", !!d.vp);
-
-      if(d.fact){
-        $("#factureBox").style.display="block";
-        $("#btnFacture").classList.add("orange");
-
-        $("#factType").value = d.fact.type || d.client;
-        $("#factStatus").value = d.fact.status || "encore";
-        $("#factPay").value = d.fact.pay || "";
-
-        updateFactureUI();
-
-        if(d.fact.type==="PRO"){
-          $("#proFirme").value = d.fact.pro?.firme || "";
-          $("#proRue").value   = d.fact.pro?.rue   || "";
-          $("#proCP").value    = d.fact.pro?.cp    || "";
-          $("#proVille").value = d.fact.pro?.ville || "";
-          $("#proTVA").value   = d.fact.pro?.tva   || "";
-          $("#proEmail").value = d.fact.pro?.email || "";
-        }else{
-          $("#partPrenom").value = d.fact.part?.prenom || "";
-          $("#partNom").value    = d.fact.part?.nom    || "";
-          $("#partRue").value    = d.fact.part?.rue    || "";
-          $("#partCP").value     = d.fact.part?.cp     || "";
-          $("#partVille").value  = d.fact.part?.ville  || "";
-          $("#partEmail").value  = d.fact.part?.email  || "";
-        }
-      }else{
-        $("#factureBox").style.display="none";
-        $("#btnFacture").classList.remove("orange");
-        resetFactureFields();
-      }
-      updateFactureUI();
-    }
-
-    function resetFactureFields(){
-      $("#factType").value="PRO";
-      $("#factStatus").value="encore";
-      $("#factPay").value="";
-      ["proFirme","proRue","proCP","proVille","proTVA","proEmail","partPrenom","partNom","partRue","partCP","partVille","partEmail"].forEach(id=>{
-        const el=$("#"+id); if(el) el.value="";
-      });
-      $("#btnFacture").classList.remove("orange");
+    function loadIntoForm(id,d){editingId=id;
+      $("#datePicker").value=d.date;$("#startTime").value=d.start;$("#endTime").value=d.end;
+      selectedType=d.type;$$(".type-btn").forEach(x=>x.classList.toggle("active",x.dataset.type===selectedType));
+      if(d.client==="PRO")btnPro.click();else btnPart.click();
+      $("#note").value=d.note||"";$("#facture").value=d.facture||"";$("#adresse").value=d.adresse||"";
+      $("#btnNote").classList.toggle("orange",!!d.note);$("#btnFacture").classList.toggle("orange",!!d.facture);
+      $("#indVF").classList.toggle("violet",!!d.vf);$("#indVP").classList.toggle("violet",!!d.vp);
     }
 
     function clearForm(){
-      $("#startTime").value=""; $("#endTime").value="";
-      selectedType="LFT";
-      $$(".type-btn").forEach(x=>x.classList.remove("active"));
-      typeButtons.querySelector('[data-type="LFT"]').classList.add("active");
-
-      // PRO par défaut, mais garder les deux visibles
-      setClient("PRO");
-      btnPro.style.display="inline-block"; btnPart.style.display="inline-block";
-
-      $("#note").value=""; $("#btnNote").classList.remove("orange");
-      $("#adresse").value="";
-      $("#indVF").classList.remove("violet"); $("#indVP").classList.remove("violet");
-
-      $("#factureBox").style.display="none";
-      resetFactureFields();
-
-      $("#noteBox").style.display="none";
-      $("#adresseBox").style.display="none";
+      $("#startTime").value="";$("#endTime").value="";
+      $("#note").value="";$("#facture").value="";$("#adresse").value="";
+      $("#btnNote").classList.remove("orange");$("#btnFacture").classList.remove("orange");
+      selectedType="LFT";$$(".type-btn").forEach(x=>x.classList.remove("active"));typeButtons.querySelector('[data-type="LFT"]').classList.add("active");
+      btnPro.style.display="inline-block";btnPart.style.display="inline-block";selectedClient="PRO";
+      $("#indVF").classList.remove("violet");$("#indVP").classList.remove("violet");
+      $("#noteBox").style.display="none";$("#adresseBox").style.display="none";$("#factureBox").style.display="none";
     }
 
-    // PREMIER RENDU
+    $("#datePicker").addEventListener("change",refreshList);
     refreshList();
   </script>
 </body>
 </html>
+
 
 
 
