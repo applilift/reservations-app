@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Carnet de Bord – Réservations libres</title>
 
-  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2ecc71">
 
@@ -90,7 +89,7 @@
     </header>
 
     <div class="grid">
-      <!-- Formulaire de nouvelle réservation -->
+      <!-- Formulaire -->
       <section class="card">
         <h2>Nouvelle réservation</h2>
 
@@ -129,13 +128,11 @@
               <span class="pill" id="indVP">V(P)</span>
             </div>
 
-            <!-- Note -->
             <div class="fieldset" id="noteBox" style="display:none">
               <legend>Note</legend>
               <textarea id="note" rows="3"></textarea>
             </div>
 
-            <!-- Facture -->
             <div class="fieldset" id="factureBox" style="display:none">
               <legend>Facture</legend>
 
@@ -156,7 +153,6 @@
                 </div>
               </div>
 
-              <!-- Bloc PRO -->
               <div id="blocPro" class="row">
                 <div style="flex:1">
                   <label class="small">Nom de la firme</label>
@@ -171,7 +167,6 @@
                 <input type="email" id="proEmail" placeholder="Email"/>
               </div>
 
-              <!-- Bloc PART -->
               <div id="blocPart" class="row" style="display:none">
                 <div class="cols-2" style="flex:1">
                   <div>
@@ -204,7 +199,6 @@
               </div>
             </div>
 
-            <!-- Adresse -->
             <div class="fieldset" id="adresseBox" style="display:none">
               <legend>Adresse</legend>
               <textarea id="adresse" rows="2"></textarea>
@@ -226,11 +220,11 @@
       </section>
     </div>
   </div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-  // 🔑 Firebase Config — ta vraie clé ici :
   const firebaseConfig = {
     apiKey: "AIzaSyAiRQYtjjPjkwiU76iqZGdnxgxjjbbaLQI",
     authDomain: "agendacarnet.firebaseapp.com",
@@ -251,24 +245,6 @@
 
   let selectedType="LFT", selectedClient="PRO", editingId=null;
 
-  // Notifications visuelles
-  function showToast(msg,color="#333"){
-    const t=document.createElement("div");
-    t.className="toast";t.style.background=color;t.textContent=msg;
-    document.body.appendChild(t);
-    setTimeout(()=>t.classList.add("show"),50);
-    setTimeout(()=>{t.classList.remove("show");setTimeout(()=>t.remove(),400);},3000);
-  }
-
-  async function notify(title,body){
-    if(Notification.permission==="granted"){new Notification(title,{body});}
-    else if(Notification.permission!=="denied"){
-      const perm=await Notification.requestPermission();
-      if(perm==="granted") new Notification(title,{body});
-    }
-  }
-
-  // Initialisation
   $("#datePicker").value = new Date().toISOString().split("T")[0];
   const typeButtons = $("#typeButtons");
   typeButtons.addEventListener("click",(e)=>{
@@ -280,24 +256,20 @@
   typeButtons.querySelector('[data-type="LFT"]').classList.add("active");
 
   const btnPro=$("#btnPro"), btnPart=$("#btnPart");
-
   function setClient(val){
     selectedClient=val;
     if(val==="PRO"){btnPro.style.display="inline-block";btnPart.style.display="none";}
     else{btnPart.style.display="inline-block";btnPro.style.display="none";}
   }
-
   btnPro.addEventListener("click",()=>setClient("PRO"));
   btnPart.addEventListener("click",()=>setClient("PART"));
 
-  // Boutons champs dynamiques
   $("#btnNote").addEventListener("click",()=>$("#noteBox").style.display=$("#noteBox").style.display==="none"?"block":"none");
   $("#btnFacture").addEventListener("click",()=>$("#factureBox").style.display=$("#factureBox").style.display==="none"?"block":"none");
   $("#btnAdresse").addEventListener("click",()=>$("#adresseBox").style.display=$("#adresseBox").style.display==="none"?"block":"none");
   $("#indVF").addEventListener("click",()=>$("#indVF").classList.toggle("violet"));
   $("#indVP").addEventListener("click",()=>$("#indVP").classList.toggle("violet"));
 
-  // Facture UI
   const factType=$("#factType"), factStatus=$("#factStatus");
   factType.addEventListener("change",updateFactureUI);
   factStatus.addEventListener("change",updateFactureUI);
@@ -318,40 +290,12 @@
     }
   }
 
-  function getFactureData(){
-    const type=factType.value;
-    const status=factStatus.value;
-    const pay=$("#factPay").value;
-    let fact={type,status,pay};
-    if(type==="PRO"){
-      fact.pro={
-        firme:$("#proFirme").value.trim(),
-        rue:$("#proRue").value.trim(),
-        cp:$("#proCP").value.trim(),
-        ville:$("#proVille").value.trim(),
-        tva:$("#proTVA").value.trim(),
-        email:$("#proEmail").value.trim()
-      };
-    }else{
-      fact.part={
-        prenom:$("#partPrenom").value.trim(),
-        nom:$("#partNom").value.trim(),
-        rue:$("#partRue").value.trim(),
-        cp:$("#partCP").value.trim(),
-        ville:$("#partVille").value.trim(),
-        email:$("#partEmail").value.trim()
-      };
-    }
-    return fact;
-  }
-
   function hasFactureData(f){
     if(!f) return false;
     if(f.type==="PRO") return f.pro?.firme || f.pay;
     return f.part?.nom || f.part?.prenom || f.pay;
   }
 
-  // Refresh liste
   async function refreshList(){
     const d=$("#datePicker").value;
     $("#list").innerHTML="";$("#empty").style.display="block";
@@ -390,7 +334,6 @@
     div.querySelector('[data-act="del"]').addEventListener("click",async()=>{
       if(confirm("Supprimer ?")){
         await deleteDoc(doc(db,"reservations_free",id));
-        showToast("Réservation supprimée ❌","#c44536");
         refreshList();
       }
     });
@@ -411,18 +354,13 @@
     const adresse=$("#adresse").value.trim().toUpperCase();
     const vf=$("#indVF").classList.contains("violet");
     const vp=$("#indVP").classList.contains("violet");
-    const fact=getFactureData();
 
-    const data={date,start,end,type:selectedType,client:selectedClient,note,adresse,vf,vp,fact,createdAt:Date.now()};
+    const data={date,start,end,type:selectedType,client:selectedClient,note,adresse,vf,vp,createdAt:Date.now()};
 
     if(editingId){
       await updateDoc(doc(db,"reservations_free",editingId),data);
-      showToast("Réservation modifiée ✏️","#f39c12");
-      notify("Réservation modifiée","Un créneau a été modifié.");
     }else{
       await addDoc(COL,data);
-      showToast("Réservation ajoutée ✅","#2ecc71");
-      notify("Nouvelle réservation","Un créneau a été ajouté.");
     }
 
     editingId=null;
@@ -430,45 +368,51 @@
     refreshList();
   }
 
-  function loadIntoForm(id,d){
-    editingId=id;
-    $("#datePicker").value=d.date;
-    $("#startTime").value=d.start;
-    $("#endTime").value=d.end;
-    selectedType=d.type;
-    $$(".type-btn").forEach(x=>x.classList.toggle("active",x.dataset.type===selectedType));
-    setClient(d.client);
+  // ✅ Fonction corrigée
+  function loadIntoForm(id, d) {
+    editingId = id;
+    $("#datePicker").value = d.date;
+    $("#startTime").value = d.start;
+    $("#endTime").value = d.end;
 
-    $("#note").value=d.note||"";
-    $("#adresse").value=d.adresse||"";
-    $("#indVF").classList.toggle("violet",!!d.vf);
-    $("#indVP").classList.toggle("violet",!!d.vp);
+    selectedType = d.type;
+    $$(".type-btn").forEach(x => x.classList.toggle("active", x.dataset.type === selectedType));
 
-    if(d.fact){
-      $("#factureBox").style.display="block";
+    // ✅ Réinitialisation des boutons PRO / PART lors de la modification
+    btnPro.style.display = "inline-block";
+    btnPart.style.display = "inline-block";
+    selectedClient = d.client;
+
+    $("#note").value = d.note || "";
+    $("#adresse").value = d.adresse || "";
+    $("#indVF").classList.toggle("violet", !!d.vf);
+    $("#indVP").classList.toggle("violet", !!d.vp);
+
+    if (d.fact) {
+      $("#factureBox").style.display = "block";
       $("#btnFacture").classList.add("orange");
-      factType.value=d.fact.type||"PRO";
-      factStatus.value=d.fact.status||"encore";
-      $("#factPay").value=d.fact.pay||"";
+      factType.value = d.fact.type || "PRO";
+      factStatus.value = d.fact.status || "encore";
+      $("#factPay").value = d.fact.pay || "";
       updateFactureUI();
 
-      if(d.fact.type==="PRO"){
-        $("#proFirme").value=d.fact.pro?.firme||"";
-        $("#proRue").value=d.fact.pro?.rue||"";
-        $("#proCP").value=d.fact.pro?.cp||"";
-        $("#proVille").value=d.fact.pro?.ville||"";
-        $("#proTVA").value=d.fact.pro?.tva||"";
-        $("#proEmail").value=d.fact.pro?.email||"";
-      }else{
-        $("#partPrenom").value=d.fact.part?.prenom||"";
-        $("#partNom").value=d.fact.part?.nom||"";
-        $("#partRue").value=d.fact.part?.rue||"";
-        $("#partCP").value=d.fact.part?.cp||"";
-        $("#partVille").value=d.fact.part?.ville||"";
-        $("#partEmail").value=d.fact.part?.email||"";
+      if (d.fact.type === "PRO") {
+        $("#proFirme").value = d.fact.pro?.firme || "";
+        $("#proRue").value = d.fact.pro?.rue || "";
+        $("#proCP").value = d.fact.pro?.cp || "";
+        $("#proVille").value = d.fact.pro?.ville || "";
+        $("#proTVA").value = d.fact.pro?.tva || "";
+        $("#proEmail").value = d.fact.pro?.email || "";
+      } else {
+        $("#partPrenom").value = d.fact.part?.prenom || "";
+        $("#partNom").value = d.fact.part?.nom || "";
+        $("#partRue").value = d.fact.part?.rue || "";
+        $("#partCP").value = d.fact.part?.cp || "";
+        $("#partVille").value = d.fact.part?.ville || "";
+        $("#partEmail").value = d.fact.part?.email || "";
       }
-    }else{
-      $("#factureBox").style.display="none";
+    } else {
+      $("#factureBox").style.display = "none";
       $("#btnFacture").classList.remove("orange");
     }
   }
