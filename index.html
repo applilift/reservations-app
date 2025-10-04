@@ -72,15 +72,9 @@
     .actions{display:flex;gap:8px}
     .pro-mauve{color:var(--violet);font-weight:bold}
     .part-mauve{color:var(--violet);font-weight:bold}
-    .hidden{display:none !important}
     @media(max-width:600px){
-      .btn-primary,.btn-secondary,.btn-danger{width:100%;font-size:18px;padding:16px}
-      textarea,input,select{font-size:18px}
-      .pill{padding:10px 14px;font-size:14px}
-      .pp-btn{padding:12px 16px;font-size:16px}
-      .row{gap:12px}
-      .actions{flex-direction:column;width:100%}
-      .res-item{grid-template-columns:1fr;gap:10px}
+      .btn-primary,.btn-secondary,.btn-danger{width:100%;font-size:16px;padding:14px}
+      textarea,input,select{font-size:16px}
       h1{font-size:18px}
     }
   </style>
@@ -291,68 +285,19 @@
     selectedClient=val;
     if(val==="PRO"){btnPro.style.display="inline-block";btnPart.style.display="none";}
     else{btnPart.style.display="inline-block";btnPro.style.display="none";}
-
-    // Synchroniser le menu Facture selon le choix PRO/PART
-    if(document.getElementById("factType")){
-      document.getElementById("factType").value = val;
-      updateFactureUI();
-      updatePillIndicators();
-    }
   }
 
   btnPro.addEventListener("click",()=>setClient("PRO"));
   btnPart.addEventListener("click",()=>setClient("PART"));
 
   // Boutons champs dynamiques
-  $("#btnNote").addEventListener("click",()=>{
-    const box = $("#noteBox");
-    box.style.display = (box.style.display==="none"||box.style.display==="") ? "block" : "none";
-    if(box.style.display==="block") { $("#note").focus(); }
-    updatePillIndicators();
-  });
-  $("#btnFacture").addEventListener("click",()=>{
-    const box = $("#factureBox");
-    box.style.display = (box.style.display==="none"||box.style.display==="") ? "block" : "none";
-    updatePillIndicators();
-  });
-  $("#btnAdresse").addEventListener("click",()=>{
-    const box = $("#adresseBox");
-    box.style.display = (box.style.display==="none"||box.style.display==="") ? "block" : "none";
-    if(box.style.display==="block") { $("#adresse").focus(); }
-    updatePillIndicators();
-  });
-  $("#indVF").addEventListener("click",()=>{ $("#indVF").classList.toggle("violet"); });
-  $("#indVP").addEventListener("click",()=>{ $("#indVP").classList.toggle("violet"); });
+  $("#btnNote").addEventListener("click",()=>$("#noteBox").style.display=$("#noteBox").style.display==="none"?"block":"none");
+  $("#btnFacture").addEventListener("click",()=>$("#factureBox").style.display=$("#factureBox").style.display==="none"?"block":"none");
+  $("#btnAdresse").addEventListener("click",()=>$("#adresseBox").style.display=$("#adresseBox").style.display==="none"?"block":"none");
+  $("#indVF").addEventListener("click",()=>$("#indVF").classList.toggle("violet"));
+  $("#indVP").addEventListener("click",()=>$("#indVP").classList.toggle("violet"));
 
-  
-  // --- Indicators (orange/violet) live updates ---
-  function updatePillIndicators(){
-    // Note -> orange if non-empty
-    const noteHas = ($("#note").value || "").trim().length > 0;
-    $("#btnNote").classList.toggle("orange", noteHas);
-
-    // Adresse -> orange if non-empty (quality-of-life)
-    const adrHas = ($("#adresse").value || "").trim().length > 0;
-    $("#btnAdresse").classList.toggle("orange", adrHas);
-
-    // Facture -> orange if any relevant data present
-    const f = getFactureData();
-    $("#btnFacture").classList.toggle("orange", hasFactureData(f));
-  }
-
-  // Observe inputs to update indicators live
-  ["note","adresse","proFirme","proRue","proCP","proVille","proTVA","proEmail","partPrenom","partNom","partRue","partCP","partVille","partEmail"].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el){ el.addEventListener("input", updatePillIndicators); }
-  });
-  ["factType","factStatus","factPay"].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el){ el.addEventListener("change", ()=>{ updateFactureUI(); updatePillIndicators(); }); }
-  });
-
-  // Ensure initial orange state on load
-  document.addEventListener("DOMContentLoaded", updatePillIndicators);
-// Facture UI
+  // Facture UI
   const factType=$("#factType"), factStatus=$("#factStatus");
   factType.addEventListener("change",updateFactureUI);
   factStatus.addEventListener("change",updateFactureUI);
@@ -435,7 +380,6 @@
           ${data.vp?`<span class="pill violet">V(P)</span>`:""}
           ${data.note?`<span class="pill orange">Note</span>`:""}
           ${hasFactureData(data.fact)?`<span class="pill orange">Facture</span>`:""}
-          ${data.adresse?`<span class="pill orange">Adresse</span>`:""}
         </div>
         ${data.adresse?`<div><strong>${data.adresse}</strong></div>`:""}
       </div>
@@ -502,7 +446,7 @@
 
     if(d.fact){
       $("#factureBox").style.display="block";
-      // orange sera géré par updatePillIndicators
+      $("#btnFacture").classList.add("orange");
       factType.value=d.fact.type||"PRO";
       factStatus.value=d.fact.status||"encore";
       $("#factPay").value=d.fact.pay||"";
@@ -529,8 +473,6 @@
     }
   }
 
-  updatePillIndicators();
-
   function clearForm(){
     $("#startTime").value="";
     $("#endTime").value="";
@@ -547,7 +489,6 @@
     $("#noteBox").style.display="none";
     $("#adresseBox").style.display="none";
     $("#factureBox").style.display="none";
-    updatePillIndicators();
   }
 
   $("#datePicker").addEventListener("change",refreshList);
