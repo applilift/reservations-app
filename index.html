@@ -2,395 +2,559 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agenda Carnet - Réservations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Carnet de Bord – Réservations libres</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2ecc71">
+
   <style>
-    :root {
-      --violet: #5e35b1;
-      --violet-clair: #7e57c2;
-      --orange: #ff9800;
+    :root{
+      --red:#e74c3c;
+      --green:#2ecc71;
+      --orange:#f39c12;
+      --blue:#2980b9;
+      --ink:#333;
+      --muted:#777;
+      --bg:#fafafa;
+      --card:#fff;
+      --violet:#483d8b;
+      --orchid:mediumorchid;
     }
-
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f5f5f5;
-    }
-
-    header {
-      background: var(--violet);
-      color: white;
-      padding: 10px;
-      text-align: center;
-      font-size: 1.4rem;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 20px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      color: var(--violet);
-      margin-top: 0;
-    }
-
-    form {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px 20px;
-    }
-
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 6px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-
-    .actions {
-      grid-column: 1 / -1;
-      text-align: right;
-      margin-top: 10px;
-    }
-
-    button {
-      background: var(--violet);
-      color: white;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    button:hover {
-      background: var(--violet-clair);
-    }
-
-    .switch-pro-part {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .switch-pro-part button {
-      flex: 1;
-      background: #ddd;
-      color: var(--violet);
-      font-weight: bold;
-    }
-
-    .switch-pro-part button.active {
-      background: var(--violet);
-      color: white;
-    }
-
-    .voyant {
-      width: 12px;
-      height: 12px;
-      display: inline-block;
-      border-radius: 50%;
-      margin-left: 5px;
-      background: #ccc;
-      vertical-align: middle;
-    }
-
-    .voyant.orange { background: var(--orange); }
-    .voyant.mauve { background: var(--violet); }
-
-    .reservation-jour {
-      margin-top: 30px;
-    }
-
-    .reservation-item {
-      background: #f9f9f9;
-      padding: 8px 10px;
-      border-radius: 4px;
-      margin-bottom: 5px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .reservation-item strong {
-      color: var(--violet);
-    }
-
-    @media screen and (max-width: 600px) {
-      form {
-        grid-template-columns: 1fr;
-      }
-      .actions {
-        text-align: center;
-      }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:1000px;margin:auto;padding:16px}
+    header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+    header .datebox{display:flex;gap:10px;align-items:center}
+    input[type="date"]{font-size:18px;padding:8px 10px}
+    h1{font-size:20px;margin:0;font-weight:700}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media (max-width:860px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid #e6e6e6;border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+    .card h2{margin:0 0 10px;font-size:18px}
+    .row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+    label.small{font-size:12px;color:var(--muted);display:block}
+    input[type="time"],select,textarea,input[type="text"],input[type="email"]{width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:8px;font-size:15px}
+    .time-2{display:grid;grid-template-columns:repeat(2,minmax(140px,1fr));gap:10px}
+    .type-buttons{display:flex;flex-wrap:wrap;gap:8px}
+    .type-btn{border:none;border-radius:999px;padding:6px 10px;font-weight:700;cursor:pointer}
+    .type-EXP{color:var(--red);border:2px solid var(--red)}
+    .type-LFT{color:var(--green);border:2px solid var(--green)}
+    .type-PER{color:var(--orange);border:2px solid var(--orange)}
+    .type-PAU{color:var(--blue);border:2px solid var(--blue)}
+    .type-btn.active{color:#fff}
+    .type-EXP.active{background:var(--red)}
+    .type-LFT.active{background:var(--green)}
+    .type-PER.active{background:var(--orange)}
+    .type-PAU.active{background:var(--blue)}
+    .pro-part{display:flex;flex-direction:column;gap:6px}
+    .pp-btn{background:var(--orchid);color:#fff;border:none;border-radius:6px;padding:6px 10px;font-weight:bold;cursor:pointer}
+    .inline-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .pill{display:inline-block;border:1px solid #bbb;border-radius:999px;padding:4px 10px;font-size:12px;color:#444;background:#f5f5f5;cursor:pointer}
+    .pill.orange{background:var(--orange);color:#fff;border-color:var(--orange)}
+    .pill.violet{background:var(--violet);color:#fff;border-color:var(--violet)}
+    .fieldset{border:1px solid #ddd;border-radius:8px;padding:10px;margin-top:8px;background:#f9f9ff}
+    .fieldset legend{font-weight:700}
+    .cols-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    @media(max-width:680px){.cols-2{grid-template-columns:1fr}}
+    .btn-primary{background:#222;color:#fff;border:none;border-radius:8px;padding:10px 14px;font-size:15px;cursor:pointer}
+    .btn-secondary{background:#fff;color:#000;border:1px solid #aaa;border-radius:8px;padding:8px 12px;font-size:13px;cursor:pointer}
+    .btn-danger{background:#fff;color:#000;border:1px solid #aaa;border-radius:8px;padding:8px 12px;font-size:13px;cursor:pointer}
+    .res-item{border:1px solid #e6e6e6;border-radius:10px;padding:10px 12px;margin-bottom:10px;background:#fff;display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center}
+    .badge{font-size:12px;font-weight:700;border-radius:6px;padding:3px 6px;display:inline-block}
+    .bEXP{background:var(--red);color:#fff}
+    .bLFT{background:var(--green);color:#fff}
+    .bPER{background:var(--orange);color:#fff}
+    .bPAU{background:var(--blue);color:#fff}
+    .muted{color:var(--muted);font-size:12px}
+    .title-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    .actions{display:flex;gap:8px}
+    .pro-mauve{color:var(--violet);font-weight:bold}
+    .part-mauve{color:var(--violet);font-weight:bold}
+    .hidden{display:none !important}
+    @media(max-width:600px){
+      .btn-primary,.btn-secondary,.btn-danger{width:100%;font-size:18px;padding:16px}
+      textarea,input,select{font-size:18px}
+      .pill{padding:10px 14px;font-size:14px}
+      .pp-btn{padding:12px 16px;font-size:16px}
+      .row{gap:12px}
+      .actions{flex-direction:column;width:100%}
+      .res-item{grid-template-columns:1fr;gap:10px}
+      h1{font-size:18px}
     }
   </style>
 </head>
 <body>
-  <header>📅 Agenda Carnet - Réservations</header>
+  <div class="wrap">
+    <header>
+      <h1>Agenda — Réservations libres</h1>
+      <div class="datebox">
+        <label class="small">Date</label>
+        <input type="date" id="datePicker"/>
+      </div>
+    </header>
 
-  <div class="container">
-    <h2>Nouvelle réservation</h2>
+    <div class="grid">
+      <!-- Formulaire de nouvelle réservation -->
+      <section class="card">
+        <h2>Nouvelle réservation</h2>
 
-    <div class="switch-pro-part">
-      <button id="btn-pro">PRO</button>
-      <button id="btn-part">PART</button>
-    </div>
+        <div class="row time-2">
+          <div>
+            <label class="small">Début</label>
+            <input type="time" id="startTime" step="900"/>
+          </div>
+          <div>
+            <label class="small">Fin</label>
+            <input type="time" id="endTime" step="900"/>
+          </div>
+        </div>
 
-    <form id="reservation-form">
-      <div>
-        <label for="nom">Nom</label>
-        <input type="text" id="nom" name="nom" required>
-      </div>
-      <div>
-        <label for="prenom">Prénom</label>
-        <input type="text" id="prenom" name="prenom" required>
-      </div>
-      <div>
-        <label for="date">Date</label>
-        <input type="date" id="date" name="date" required>
-      </div>
-      <div>
-        <label for="heure">Heure</label>
-        <input type="time" id="heure" name="heure" required>
-      </div>
-      <div>
-        <label for="facture">Facture</label>
-        <select id="facture" name="facture">
-          <option value="">-- Sélectionner --</option>
-          <option value="pro">Professionnel</option>
-          <option value="part">Particulier</option>
-        </select>
-        <span class="voyant" id="voyant-facture"></span>
-      </div>
-      <div>
-        <label for="note">Note</label>
-        <select id="note" name="note">
-          <option value="">-- Sélectionner --</option>
-          <option value="remarque">Remarque</option>
-          <option value="info">Info</option>
-        </select>
-        <span class="voyant" id="voyant-note"></span>
-      </div>
-      <div class="actions">
-        <button type="submit">Ajouter</button>
-      </div>
-    </form>
+        <div class="row">
+          <label class="small">Type</label>
+          <div class="type-buttons" id="typeButtons">
+            <button class="type-btn type-EXP" data-type="EXP">LIFT EXPRESS</button>
+            <button class="type-btn type-LFT" data-type="LFT"># LIFT</button>
+            <button class="type-btn type-PER" data-type="PER">RDV PERSO</button>
+            <button class="type-btn type-PAU" data-type="PAU">PAUSE</button>
+          </div>
+        </div>
 
-    <div class="reservation-jour">
-      <h2>Réservations du jour</h2>
-      <div id="liste-reservations"></div>
+        <div class="row">
+          <div class="pro-part">
+            <button class="pp-btn" id="btnPro">PRO</button>
+            <button class="pp-btn" id="btnPart">PART</button>
+          </div>
+          <div style="flex:1">
+            <div class="inline-actions">
+              <span class="pill" id="btnNote">NOTE</span>
+              <span class="pill" id="btnFacture">FACTURE</span>
+              <span class="pill" id="btnAdresse">ADRESSE</span>
+              <span class="pill" id="indVF">V(F)</span>
+              <span class="pill" id="indVP">V(P)</span>
+            </div>
+
+            <!-- Note -->
+            <div class="fieldset" id="noteBox" style="display:none">
+              <legend>Note</legend>
+              <textarea id="note" rows="3"></textarea>
+            </div>
+
+            <!-- Facture -->
+            <div class="fieldset" id="factureBox" style="display:none">
+              <legend>Facture</legend>
+
+              <div class="row cols-2">
+                <div>
+                  <label class="small">Type de client</label>
+                  <select id="factType">
+                    <option value="PRO">PRO</option>
+                    <option value="PART">PARTICULIER</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="small">Statut client</label>
+                  <select id="factStatus">
+                    <option value="encore">Pas encodé</option>
+                    <option value="deja">Déjà encodé</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Bloc PRO -->
+              <div id="blocPro" class="row">
+                <div style="flex:1">
+                  <label class="small">Nom de la firme</label>
+                  <input type="text" id="proFirme"/>
+                </div>
+              </div>
+              <div id="extraPro" class="row cols-2">
+                <input type="text" id="proRue" placeholder="Rue et n°"/>
+                <input type="text" id="proCP" placeholder="Code postal"/>
+                <input type="text" id="proVille" placeholder="Ville"/>
+                <input type="text" id="proTVA" placeholder="N° TVA"/>
+                <input type="email" id="proEmail" placeholder="Email"/>
+              </div>
+
+              <!-- Bloc PART -->
+              <div id="blocPart" class="row" style="display:none">
+                <div class="cols-2" style="flex:1">
+                  <div>
+                    <label class="small">Prénom</label>
+                    <input type="text" id="partPrenom"/>
+                  </div>
+                  <div>
+                    <label class="small">Nom</label>
+                    <input type="text" id="partNom"/>
+                  </div>
+                </div>
+              </div>
+              <div id="extraPart" class="row cols-2" style="display:none">
+                <input type="text" id="partRue" placeholder="Rue et n°"/>
+                <input type="text" id="partCP" placeholder="Code postal"/>
+                <input type="text" id="partVille" placeholder="Ville"/>
+                <input type="email" id="partEmail" placeholder="Email"/>
+              </div>
+
+              <div class="row">
+                <div style="flex:1">
+                  <label class="small">Mode de paiement</label>
+                  <select id="factPay">
+                    <option value="">-- Choisir --</option>
+                    <option value="cash">Payé cash</option>
+                    <option value="virement">Payé virement</option>
+                    <option value="non">Non payé</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Adresse -->
+            <div class="fieldset" id="adresseBox" style="display:none">
+              <legend>Adresse</legend>
+              <textarea id="adresse" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <button class="btn-primary" id="btnSave">Ajouter la réservation</button>
+          <button class="btn-secondary" id="btnCancelEdit" style="display:none">Annuler</button>
+        </div>
+      </section>
+
+      <!-- Liste -->
+      <section class="card">
+        <h2>Réservations du jour</h2>
+        <div id="list"></div>
+        <div id="empty" class="muted">Aucune réservation pour cette date.</div>
+      </section>
     </div>
   </div>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAiRQYtjjPjkwiU76iqZGdnxgxjjbbaLQI",
-      authDomain: "agendacarnet.firebaseapp.com",
-      projectId: "agendacarnet",
-      storageBucket: "agendacarnet.firebasestorage.app",
-      messagingSenderId: "593717794727",
-      appId: "1:593717794727:web:e45a8b06f4e9d356b74882"
-    };
+  // 🔑 Firebase Config — ta vraie clé ici :
+  const firebaseConfig = {
+    apiKey: "AIzaSyAiRQYtjjPjkwiU76iqZGdnxgxjjbbaLQI",
+    authDomain: "agendacarnet.firebaseapp.com",
+    projectId: "agendacarnet",
+    storageBucket: "agendacarnet.firebasestorage.app",
+    messagingSenderId: "593717794727",
+    appId: "1:593717794727:web:e45a8b06f4e9d356b74882"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const COL = collection(db, "reservations_free");
 
-    const form = document.getElementById('reservation-form');
-    const liste = document.getElementById('liste-reservations');
-    const factureSelect = document.getElementById('facture');
-    const noteSelect = document.getElementById('note');
-    const voyantFacture = document.getElementById('voyant-facture');
-    const voyantNote = document.getElementById('voyant-note');
+  const $ = s => document.querySelector(s);
+  const $$ = s => document.querySelectorAll(s);
+  const toHM = t => t?.substring(0,5) || "";
+  const colorFromType = t => ({EXP:"bEXP",LFT:"bLFT",PER:"bPER",PAU:"bPAU"}[t]||"");
 
-    // Voyants interactifs
-    factureSelect.addEventListener('change', () => {
-      voyantFacture.className = 'voyant ' + (factureSelect.value ? 'orange' : '');
-    });
+  let selectedType="LFT", selectedClient="PRO", editingId=null;
 
-    noteSelect.addEventListener('change', () => {
-      voyantNote.className = 'voyant ' + (noteSelect.value ? 'orange' : '');
-    });
+  // Notifications visuelles
+  function showToast(msg,color="#333"){
+    const t=document.createElement("div");
+    t.className="toast";t.style.background=color;t.textContent=msg;
+    document.body.appendChild(t);
+    setTimeout(()=>t.classList.add("show"),50);
+    setTimeout(()=>{t.classList.remove("show");setTimeout(()=>t.remove(),400);},3000);
+  }
 
-    // Boutons PRO / PART
-    const btnPro = document.getElementById('btn-pro');
-    const btnPart = document.getElementById('btn-part');
-    let typeClient = '';
-
-    function updateButtons(selected) {
-      if (selected === 'pro') {
-        btnPro.classList.add('active');
-        btnPart.classList.remove('active');
-        typeClient = 'pro';
-      } else if (selected === 'part') {
-        btnPart.classList.add('active');
-        btnPro.classList.remove('active');
-        typeClient = 'part';
-      } else {
-        btnPro.classList.remove('active');
-        btnPart.classList.remove('active');
-        typeClient = '';
-      }
+  async function notify(title,body){
+    if(Notification.permission==="granted"){new Notification(title,{body});}
+    else if(Notification.permission!=="denied"){
+      const perm=await Notification.requestPermission();
+      if(perm==="granted") new Notification(title,{body});
     }
+  }
 
-    btnPro.addEventListener('click', () => updateButtons('pro'));
-    btnPart.addEventListener('click', () => updateButtons('part'));
+  // Initialisation
+  $("#datePicker").value = new Date().toISOString().split("T")[0];
+  const typeButtons = $("#typeButtons");
+  typeButtons.addEventListener("click",(e)=>{
+    const b=e.target.closest(".type-btn");if(!b)return;
+    selectedType=b.dataset.type;
+    $$(".type-btn").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+  });
+  typeButtons.querySelector('[data-type="LFT"]').classList.add("active");
 
-    // Charger les réservations
-    async function refreshList() {
-      liste.innerHTML = '';
-      const querySnapshot = await getDocs(collection(db, "reservations"));
-      querySnapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        const div = document.createElement('div');
-        div.className = 'reservation-item';
-        div.innerHTML = `<strong>${data.prenom || ''} ${data.nom || ''}</strong> – ${data.date || ''} ${data.heure || ''}`;
-        const delBtn = document.createElement('button');
-        delBtn.textContent = '🗑️';
-        delBtn.addEventListener('click', async () => {
-          await deleteDoc(doc(db, "reservations", docSnap.id));
-          refreshList();
-        });
-        div.appendChild(delBtn);
-        liste.appendChild(div);
-      });
+  const btnPro=$("#btnPro"), btnPart=$("#btnPart");
+
+  function setClient(val){
+    selectedClient=val;
+    if(val==="PRO"){btnPro.style.display="inline-block";btnPart.style.display="none";}
+    else{btnPart.style.display="inline-block";btnPro.style.display="none";}
+
+    // Synchroniser le menu Facture selon le choix PRO/PART
+    if(document.getElementById("factType")){
+      document.getElementById("factType").value = val;
+      updateFactureUI();
+      updatePillIndicators();
     }
+  }
 
-    // Ajouter une réservation
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const newReservation = {
-        nom: form.nom.value,
-        prenom: form.prenom.value,
-        date: form.date.value,
-        heure: form.heure.value,
-        facture: factureSelect.value,
-        note: noteSelect.value,
-        clientType: typeClient
+  btnPro.addEventListener("click",()=>setClient("PRO"));
+  btnPart.addEventListener("click",()=>setClient("PART"));
+
+  // Boutons champs dynamiques
+  $("#btnNote").addEventListener("click",()=>{
+    const box = $("#noteBox");
+    box.style.display = (box.style.display==="none"||box.style.display==="") ? "block" : "none";
+    if(box.style.display==="block") { $("#note").focus(); }
+    updatePillIndicators();
+  });
+  $("#btnFacture").addEventListener("click",()=>{
+    const box = $("#factureBox");
+    box.style.display = (box.style.display==="none"||box.style.display==="") ? "block" : "none";
+    updatePillIndicators();
+  });
+  $("#btnAdresse").addEventListener("click",()=>{
+    const box = $("#adresseBox");
+    box.style.display = (box.style.display==="none"||box.style.display==="") ? "block" : "none";
+    if(box.style.display==="block") { $("#adresse").focus(); }
+    updatePillIndicators();
+  });
+  $("#indVF").addEventListener("click",()=>{ $("#indVF").classList.toggle("violet"); });
+  $("#indVP").addEventListener("click",()=>{ $("#indVP").classList.toggle("violet"); });
+
+  
+  // --- Indicators (orange/violet) live updates ---
+  function updatePillIndicators(){
+    // Note -> orange if non-empty
+    const noteHas = ($("#note").value || "").trim().length > 0;
+    $("#btnNote").classList.toggle("orange", noteHas);
+
+    // Adresse -> orange if non-empty (quality-of-life)
+    const adrHas = ($("#adresse").value || "").trim().length > 0;
+    $("#btnAdresse").classList.toggle("orange", adrHas);
+
+    // Facture -> orange if any relevant data present
+    const f = getFactureData();
+    $("#btnFacture").classList.toggle("orange", hasFactureData(f));
+  }
+
+  // Observe inputs to update indicators live
+  ["note","adresse","proFirme","proRue","proCP","proVille","proTVA","proEmail","partPrenom","partNom","partRue","partCP","partVille","partEmail"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el){ el.addEventListener("input", updatePillIndicators); }
+  });
+  ["factType","factStatus","factPay"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el){ el.addEventListener("change", ()=>{ updateFactureUI(); updatePillIndicators(); }); }
+  });
+
+  // Ensure initial orange state on load
+  document.addEventListener("DOMContentLoaded", updatePillIndicators);
+// Facture UI
+  const factType=$("#factType"), factStatus=$("#factStatus");
+  factType.addEventListener("change",updateFactureUI);
+  factStatus.addEventListener("change",updateFactureUI);
+
+  function updateFactureUI(){
+    const type=factType.value;
+    const status=factStatus.value;
+    if(type==="PRO"){
+      $("#blocPro").style.display="block";
+      $("#extraPro").style.display=status==="deja"?"none":"grid";
+      $("#blocPart").style.display="none";
+      $("#extraPart").style.display="none";
+    }else{
+      $("#blocPro").style.display="none";
+      $("#extraPro").style.display="none";
+      $("#blocPart").style.display="block";
+      $("#extraPart").style.display=status==="deja"?"none":"grid";
+    }
+  }
+
+  function getFactureData(){
+    const type=factType.value;
+    const status=factStatus.value;
+    const pay=$("#factPay").value;
+    let fact={type,status,pay};
+    if(type==="PRO"){
+      fact.pro={
+        firme:$("#proFirme").value.trim(),
+        rue:$("#proRue").value.trim(),
+        cp:$("#proCP").value.trim(),
+        ville:$("#proVille").value.trim(),
+        tva:$("#proTVA").value.trim(),
+        email:$("#proEmail").value.trim()
       };
-      await addDoc(collection(db, "reservations"), newReservation);
-      form.reset();
-      voyantFacture.className = 'voyant';
-      voyantNote.className = 'voyant';
-      updateButtons('');
-      refreshList();
-    });
+    }else{
+      fact.part={
+        prenom:$("#partPrenom").value.trim(),
+        nom:$("#partNom").value.trim(),
+        rue:$("#partRue").value.trim(),
+        cp:$("#partCP").value.trim(),
+        ville:$("#partVille").value.trim(),
+        email:$("#partEmail").value.trim()
+      };
+    }
+    return fact;
+  }
 
-    // Initialisation
+  function hasFactureData(f){
+    if(!f) return false;
+    if(f.type==="PRO") return f.pro?.firme || f.pay;
+    return f.part?.nom || f.part?.prenom || f.pay;
+  }
+
+  // Refresh liste
+  async function refreshList(){
+    const d=$("#datePicker").value;
+    $("#list").innerHTML="";$("#empty").style.display="block";
+    const q=query(COL,where("date","==",d),orderBy("start"));
+    const snap=await getDocs(q);
+    let count=0;
+    snap.forEach(docSnap=>{
+      count++;
+      $("#list").appendChild(renderItem(docSnap.id,docSnap.data()));
+    });
+    $("#empty").style.display=count?"none":"block";
+  }
+
+  function renderItem(id,data){
+    const div=document.createElement("div");
+    div.className="res-item";
+    const badgeClass=colorFromType(data.type);
+    const clientClass=data.client==="PRO"?"pro-mauve":"part-mauve";
+    div.innerHTML=`
+      <div>
+        <div class="title-line">
+          <span class="badge ${badgeClass}">${data.type}</span>
+          <strong>${toHM(data.start)} → ${toHM(data.end)}</strong>
+          <span class="${clientClass}">${data.client}</span>
+          ${data.vf?`<span class="pill violet">V(F)</span>`:""}
+          ${data.vp?`<span class="pill violet">V(P)</span>`:""}
+          ${data.note?`<span class="pill orange">Note</span>`:""}
+          ${hasFactureData(data.fact)?`<span class="pill orange">Facture</span>`:""}
+          ${data.adresse?`<span class="pill orange">Adresse</span>`:""}
+        </div>
+        ${data.adresse?`<div><strong>${data.adresse}</strong></div>`:""}
+      </div>
+      <div class="actions">
+        <button class="btn-secondary" data-act="edit">Modifier</button>
+        <button class="btn-danger" data-act="del">Annuler</button>
+      </div>`;
+    div.querySelector('[data-act="del"]').addEventListener("click",async()=>{
+      if(confirm("Supprimer ?")){
+        await deleteDoc(doc(db,"reservations_free",id));
+        showToast("Réservation supprimée ❌","#c44536");
+        refreshList();
+      }
+    });
+    div.querySelector('[data-act="edit"]').addEventListener("click",()=>loadIntoForm(id,data));
+    return div;
+  }
+
+  $("#btnSave").addEventListener("click",saveReservation);
+  $("#btnCancelEdit").addEventListener("click",()=>{editingId=null;clearForm();});
+
+  async function saveReservation(){
+    const date=$("#datePicker").value;
+    const start=$("#startTime").value;
+    const end=$("#endTime").value;
+    if(!start||!end||end<=start){alert("Heures invalides");return;}
+
+    const note=$("#note").value.trim();
+    const adresse=$("#adresse").value.trim().toUpperCase();
+    const vf=$("#indVF").classList.contains("violet");
+    const vp=$("#indVP").classList.contains("violet");
+    const fact=getFactureData();
+
+    const data={date,start,end,type:selectedType,client:selectedClient,note,adresse,vf,vp,fact,createdAt:Date.now()};
+
+    if(editingId){
+      await updateDoc(doc(db,"reservations_free",editingId),data);
+      showToast("Réservation modifiée ✏️","#f39c12");
+      notify("Réservation modifiée","Un créneau a été modifié.");
+    }else{
+      await addDoc(COL,data);
+      showToast("Réservation ajoutée ✅","#2ecc71");
+      notify("Nouvelle réservation","Un créneau a été ajouté.");
+    }
+
+    editingId=null;
+    clearForm();
     refreshList();
-  </script>
-  <script type="module">
-    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+  }
 
-    const firebaseConfigRealtime = {
-      apiKey: "AIzaSyAiRQYtjjPjkwiU76iqZGdnxgxjjbbaLQI",
-      authDomain: "agendacarnet.firebaseapp.com",
-      projectId: "agendacarnet",
-      storageBucket: "agendacarnet.firebasestorage.app",
-      messagingSenderId: "593717794727",
-      appId: "1:593717794727:web:e45a8b06f4e9d356b74882"
-    };
+  function loadIntoForm(id,d){
+    editingId=id;
+    $("#datePicker").value=d.date;
+    $("#startTime").value=d.start;
+    $("#endTime").value=d.end;
+    selectedType=d.type;
+    $$(".type-btn").forEach(x=>x.classList.toggle("active",x.dataset.type===selectedType));
+    setClient(d.client);
 
-    const appRealtime = initializeApp(firebaseConfigRealtime, "realtime");
-    const dbRealtime = getFirestore(appRealtime);
-    const reservationsCol = collection(dbRealtime, "reservations");
+    $("#note").value=d.note||"";
+    $("#adresse").value=d.adresse||"";
+    $("#indVF").classList.toggle("violet",!!d.vf);
+    $("#indVP").classList.toggle("violet",!!d.vp);
 
-    // Conteneur notifications
-    let notifContainer = document.getElementById("notif-container");
-    if (!notifContainer) {
-      notifContainer = document.createElement("div");
-      notifContainer.id = "notif-container";
-      notifContainer.style.position = "fixed";
-      notifContainer.style.top = "10px";
-      notifContainer.style.left = "50%";
-      notifContainer.style.transform = "translateX(-50%)";
-      notifContainer.style.zIndex = "10000";
-      notifContainer.style.display = "flex";
-      notifContainer.style.flexDirection = "column";
-      notifContainer.style.gap = "10px";
-      notifContainer.style.width = "90%";
-      notifContainer.style.maxWidth = "400px";
-      notifContainer.style.pointerEvents = "none";
-      document.body.appendChild(notifContainer);
+    if(d.fact){
+      $("#factureBox").style.display="block";
+      // orange sera géré par updatePillIndicators
+      factType.value=d.fact.type||"PRO";
+      factStatus.value=d.fact.status||"encore";
+      $("#factPay").value=d.fact.pay||"";
+      updateFactureUI();
+
+      if(d.fact.type==="PRO"){
+        $("#proFirme").value=d.fact.pro?.firme||"";
+        $("#proRue").value=d.fact.pro?.rue||"";
+        $("#proCP").value=d.fact.pro?.cp||"";
+        $("#proVille").value=d.fact.pro?.ville||"";
+        $("#proTVA").value=d.fact.pro?.tva||"";
+        $("#proEmail").value=d.fact.pro?.email||"";
+      }else{
+        $("#partPrenom").value=d.fact.part?.prenom||"";
+        $("#partNom").value=d.fact.part?.nom||"";
+        $("#partRue").value=d.fact.part?.rue||"";
+        $("#partCP").value=d.fact.part?.cp||"";
+        $("#partVille").value=d.fact.part?.ville||"";
+        $("#partEmail").value=d.fact.part?.email||"";
+      }
+    }else{
+      $("#factureBox").style.display="none";
+      $("#btnFacture").classList.remove("orange");
     }
+  }
 
-    function showPersistentNotification(message) {
-      const toast = document.createElement("div");
-      toast.style.background = "#5e35b1";
-      toast.style.color = "white";
-      toast.style.padding = "10px 15px";
-      toast.style.borderRadius = "8px";
-      toast.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
-      toast.style.fontSize = "14px";
-      toast.style.display = "flex";
-      toast.style.justifyContent = "space-between";
-      toast.style.alignItems = "center";
-      toast.style.gap = "10px";
-      toast.style.pointerEvents = "auto";
-      toast.style.wordWrap = "break-word";
+  updatePillIndicators();
 
-      const text = document.createElement("div");
-      text.textContent = message;
-      text.style.flex = "1";
+  function clearForm(){
+    $("#startTime").value="";
+    $("#endTime").value="";
+    $("#note").value="";
+    $("#adresse").value="";
+    selectedType="LFT";
+    $$(".type-btn").forEach(x=>x.classList.remove("active"));
+    typeButtons.querySelector('[data-type="LFT"]').classList.add("active");
+    btnPro.style.display="inline-block";
+    btnPart.style.display="inline-block";
+    selectedClient="PRO";
+    $("#indVF").classList.remove("violet");
+    $("#indVP").classList.remove("violet");
+    $("#noteBox").style.display="none";
+    $("#adresseBox").style.display="none";
+    $("#factureBox").style.display="none";
+    updatePillIndicators();
+  }
 
-      const closeBtn = document.createElement("button");
-      closeBtn.textContent = "✖";
-      closeBtn.style.background = "transparent";
-      closeBtn.style.border = "none";
-      closeBtn.style.color = "white";
-      closeBtn.style.cursor = "pointer";
-      closeBtn.style.fontSize = "16px";
-      closeBtn.addEventListener("click", () => toast.remove());
-
-      toast.appendChild(text);
-      toast.appendChild(closeBtn);
-      notifContainer.appendChild(toast);
-    }
-
-    // Listener temps réel Firestore
-    onSnapshot(reservationsCol, (snapshot) => {
-      snapshot.docChanges().forEach(change => {
-        const data = change.doc.data();
-        const date = data.date || "Date ?";
-        const prenom = data.prenom || "";
-        const nom = data.nom || "";
-        const nomComplet = (prenom + " " + nom).trim() || "Client inconnu";
-
-        if (change.type === "added") {
-          showPersistentNotification(`🟢 Nouvelle réservation : ${nomComplet} – ${date}`);
-        }
-        if (change.type === "modified") {
-          showPersistentNotification(`🟡 Réservation modifiée : ${nomComplet} – ${date}`);
-        }
-        if (change.type === "removed") {
-          showPersistentNotification(`🔴 Réservation supprimée : ${nomComplet} – ${date}`);
-        }
-
-        // 🔄 Mise à jour automatique de la liste existante
-        if (typeof refreshList === "function") {
-          refreshList();
-        }
-      });
-    });
-  </script>
+  $("#datePicker").addEventListener("change",refreshList);
+  refreshList();
+</script>
 </body>
 </html>
-
 
 
 
